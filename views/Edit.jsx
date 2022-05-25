@@ -13,7 +13,7 @@ class Edit extends React.Component{
                     <label htmlFor="des">Description:</label>
                     <input type="text" id="des" defaultValue={product.des} name="des"/>
                     <label htmlFor="price">Price:</label>
-                    <input type="number" id="price" defaultValue={product.price.toFixed(2)} name="price"/>
+                    <input type="number" step="0.01" id="price" defaultValue={product.price.toFixed(2)} name="price"/>
                     <label htmlFor="price">Quantaty:</label>
                     <input type="number" id="qty" defaultValue={product.qty} name="qty"/>
                     <label htmlFor="imgsrc">Image (.PNG or .JPG only):</label>

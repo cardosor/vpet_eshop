@@ -12,7 +12,7 @@ class New extends React.Component{
                     <label htmlFor="des">Description:</label>
                     <input type="text" id="des" name="des"/>
                     <label htmlFor="price">Price:</label>
-                    <input type="number" id="price" name="price"/>
+                    <input type="number" step="0.01" id="price" name="price"/>
                     <label htmlFor="price">Quantaty:</label>
                     <input type="number" id="qty" name="qty"/>
                     <label htmlFor="imgsrc">Image (.PNG or .JPG only):</label>

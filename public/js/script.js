@@ -10,8 +10,8 @@ async function alertHello(){
 
 }
 
-buttonSayHello = document.querySelector("#buttonSayHello");
+// buttonSayHello = document.querySelector("#buttonSayHello");
 
-inputHello = document.querySelector("#helloInput");
+// inputHello = document.querySelector("#helloInput");
 
-buttonSayHello.addEventListener("click", alertHello);
+// buttonSayHello.addEventListener("click", alertHello);

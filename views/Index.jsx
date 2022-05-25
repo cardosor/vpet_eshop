@@ -19,13 +19,16 @@ class Index extends React.Component{
                                         <p>The <a href={`'/api/v1/vpets/'${product._id}`}> {product.name}'s</a> price is {product.price.toFixed(2)} USD</p>
                                         <p>Quantity: {product.qty}</p>
                                         <img src={product.imgsrc} alt="" />
+                                        <form action={`/api/v1/vpets/${product._id}`} method='GET'>
+                                            <input type="submit" value="Show"/>                                            
+                                        </form>
                                         <form action={`/api/v1/vpets/${product._id}?_method=DELETE`} method='POST'>
                                             <input type="submit" value="DELETE"/>                                            
                                         </form>
-                                        <hr />
                                         <form action={`/api/v1/vpets/edit/${product._id}`} method='GET'>
                                             <input type="submit" value="UPDATE"/>
                                         </form>
+                                        <hr />
 
                                     </li>
 

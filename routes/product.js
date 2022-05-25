@@ -14,6 +14,8 @@ const upload = multer({
     }
 });
 
+//INDUCES
+
 //index
 router.get(routName, productController.product);
 
@@ -34,5 +36,8 @@ router.post(routName, upload.single("imgsrc"), productController.createProduct);
 
 //Edit
 router.get(routName+'/edit/:id', productController.editProduct);
+
+//Show
+router.get(routName+'/:id', productController.showProduct);
 
 module.exports = router;

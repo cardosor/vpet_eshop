@@ -9,9 +9,12 @@ class DefaultLayout extends React.Component{
                 <meta charSet="UTF-8" />
                 <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <link rel="stylesheet" href="/css/bootstrap.css" />
                 <link rel="stylesheet" href="/css/styles.css" />
                 <title>{this.props.title}</title>
+                <script src="/js/bootstrap.bundle.js" defer></script>
                 <script src="/js/script.js" defer></script>
+
             </head>
             <body>
                 <h1>{this.props.title}</h1>

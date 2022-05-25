@@ -138,14 +138,11 @@ const editProduct = (req, res) => {
 
 
 //Show
-// app.get('/fruits/:indexOfFruitsArray', (req, res)=> {
-//     res.render('Show', {fruit: fruits[req.params.indexOfFruitsArray]});
-// });
-// app.get('/products/:id', (req, res)=> {
-//     Fruit.findById(req.params.id, (err, fruit) => {
-//         res.render('Show', {fruit: fruit});
-//     });
-// });
+const showProduct = (req, res)=> {
+    Product.findById(req.params.id, (err, product) => {
+        res.render('Show', {product: product});
+    });
+}
 
 
 
@@ -156,5 +153,6 @@ module.exports = {
     deleteProduct,
     productTest,
     editProduct,
-    updateProduct
+    updateProduct,
+    showProduct
 }
