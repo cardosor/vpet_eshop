@@ -1,3 +1,60 @@
 #origFilePath{
     display: none;
 }
+
+.nav > li{
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.nav > li>a{
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.nav > li>a:focus, .nav> li > a:hover{
+    background-color: aqua;
+}
+
+.nav > li > a::first-letter{
+    color: #ee6c4d;
+}
+
+.card{
+    width: 300px;
+}
+
+.card>img{
+    width: 200px;
+    height: 200px;
+    align-self: center;
+}
+
+.card-deck{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px;
+
+}
+.modalbtn{
+    width: 200px;
+}
+.card-body{
+    text-align: center;
+}
+
+#displayPetImage{
+    width: 200px;
+    height: 200px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+#displayPetContainer{
+    display: flex;
+    justify-content: center;
+}

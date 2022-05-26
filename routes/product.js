@@ -20,7 +20,7 @@ const upload = multer({
 router.get(routName, productController.product);
 
 //TEST
-router.get(routName+'/test', productController.productTest);
+router.get(routName+'/test/:id', productController.productTest);
 
 //New
 router.get(routName+'/new', productController.newProduct);
@@ -30,6 +30,9 @@ router.delete(routName+'/:id', productController.deleteProduct);
 
 //update
 router.put(routName+'/:id',upload.single("imgupdate"), productController.updateProduct);
+
+//Create
+router.post(routName+"/json", upload.single("imgsrc"), productController.createProductJson);
 
 //Create
 router.post(routName, upload.single("imgsrc"), productController.createProduct);
