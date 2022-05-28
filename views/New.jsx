@@ -17,8 +17,8 @@ class New extends React.Component{
                     <input type="number" id="qty" name="qty"/>
                     <label htmlFor="imgsrc">Image (.PNG or .JPG only):</label>
                     <input type="file" id="imgsrc" name="imgsrc" accept="image/*"/>
-                    <hr />
                     <input type="submit" value="Create vPet"/>
+                    <hr />
                 </form>
             </DefaultLayout>
         );

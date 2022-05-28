@@ -22,7 +22,7 @@ class Index extends React.Component{
                                             <li class="list-group-item">Quantity: {product.qty}</li>
                                         </ul>
                                         <div class="card-body">
-                                        <button type="button" class="btn btn-primary modalbtn" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                        <button type="button" data-id={product._id} class="btn btn-primary btnRudPet">
                                         SHOW
                                         </button>
                                         </div>

@@ -36,17 +36,39 @@ class DefaultLayout extends React.Component{
                     </li>
                 </ul>
                 {this.props.children}
-
-
-                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal fade" id="modal" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel">Show vPet</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h5 class="modal-title" id="modalTitle">Show vPet</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModalTop"></button>
                     </div>
                         <div class="modal-body">
-                        <form>
+
+                        {/* Spinner */}
+                        {/*  */}
+                        {/*  */}
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        {/* Show */}
+                        {/*  */}
+                        {/*  */}
+                        <div class="card" id="showPetCard">
+                            <img src="" class="card-img-top pet-show" data-name="imgsrc" alt=""/>
+                            <div class="card-header pet-show" data-display="vPet Name" data-name="name">
+                                vPet Name:
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item pet-show" data-display="Description" data-name="des">Description: </li>
+                                <li class="list-group-item pet-show" data-display="Price" data-name="price">Price:</li>
+                                <li class="list-group-item pet-show" data-display="Quantity" data-name="qty">Quantity:</li>
+                            </ul>
+                        </div>
+                        {/* Form */}
+                        {/*  */}
+                        {/*  */}
+                        <form id="createUpdatePetForm">
                             <div class="mb-3">
                                 <label for="petName" class="form-label">Name</label>
                                 <input type="text" class="form-control" name="name" id="petName" aria-describedby="name"/>
@@ -72,18 +94,15 @@ class DefaultLayout extends React.Component{
                             <div id="displayPetContainer">
                              <div id="displayPetImage"></div>
                             </div>
-                            
-                            {/* <button type="submit" class="btn btn-primary">Submit</button> */}
                         </form>
-                        {/* <p id="petName">Hello</p>
-                        <p id="petPrice">Hello</p>
-                        <p id="petQty">Hello</p>
-                        <img id="petImage" src="/img/Bird1653502330203.png" alt="" /> */}
+                        {/*  */}
+                        {/*  */}
+                        {/*  */}
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" id="btnResetFrom" class="btn btn-warning">Reset</button>
-                        <button type="button" id="btnCreateNewPet" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeModalBottom">Close</button>
+                        <button type="button" id="btnResetForm" class="btn btn-warning">Reset</button>
+                        <button type="button" id="btnSubmitForm" class="btn btn-primary">Submit</button>
                     </div>
                     </div>
                 </div>

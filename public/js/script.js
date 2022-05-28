@@ -1,13 +1,33 @@
 let btnName = ["Read", "Create", "Update", "Delete"];
 const btnObj = {};
-const modalEl = new bootstrap.Modal(document.querySelector('#staticBackdrop'), {});
+const states = {create:"create",
+                read: "read",
+                update:"update",
+                delete:"delete"}
+let currentState = states.read;
+//===============MODAL===============
+//===================================
+const modalEl = new bootstrap.Modal(document.querySelector('#modal'), {});
+const modalElTitle = document.querySelector('#modalTitle');
+//=========MODAL Elements============
+//===================================
 const displayPetImage = document.querySelector("#displayPetImage");
-const btnCreateNewPet = document.querySelector("#btnCreateNewPet");
-btnCreateNewPet.addEventListener("click", createNewPet);
+const createUpdatePetForm = document.querySelector("#createUpdatePetForm");
+const btnSubmitForm = document.querySelector("#btnSubmitForm");
+btnSubmitForm.addEventListener("click", subimitForm);
+const btnResetForm = document.querySelector("#btnResetForm");
+btnResetForm.addEventListener("click", resetForm);
+const closeModalTop = document.querySelector("#closeModalTop");
+closeModalTop.addEventListener("click", closeForm);
+const closeModalBottom = document.querySelector("#closeModalBottom");
+closeModalBottom.addEventListener("click", closeForm);
+let btnRudPet = document.querySelectorAll(".btnRudPet");
+btnRudPet.forEach(btn=>btn.addEventListener("click", rudPet));
+const spinner = document.querySelector(".spinner-border");
+const showPetCard = document.querySelector("#showPetCard");
 
-const btnResetFrom = document.querySelector("#btnResetFrom");
-btnResetFrom.addEventListener("click", resetPetForm);
-
+//=============================
+//=============================
 const petImgInput = document.querySelector("#petImgInput");
 petImgInput.addEventListener("change", function (){
     const reader = new FileReader();
@@ -18,19 +38,23 @@ petImgInput.addEventListener("change", function (){
     reader.readAsDataURL(this.files[0]);
 });
 
-async function fetchShowData(){
-    const response = await fetch("/api/v1/vpets/test/628e6436eba12e657f1b0849");
+async function fetchShowData(id){
+    const response = await fetch("/api/v1/vpets/test/"+id);
     const data = await response.json();
-    const petName = document.querySelector("#petName");
-    const petPrice = document.querySelector("#petPrice");
-    const petQty = document.querySelector("#petQty");
-    const petImage = document.querySelector("#petImage");
-    petPrice.textContent = data.price;
-    petQty.textContent = data.qty;
-    petName.textContent = data.name;
-    petImage.src = data.imgsrc;
-    
-
+    spinner.style.display = "none";
+    showPetCard.style.display="block";
+    const petShowEl = document.querySelectorAll(".pet-show");
+    petShowEl.forEach(el=>{
+        const name = el.dataset.name;
+        const display = el.dataset.display;
+        if(name === "imgsrc"){
+            el.src = data[name]
+        }else{
+            console.log(el.dataset.name);
+            el.textContent = `${display}: ${name === "price" ?  data[name].toFixed(2) : data[name]}`;
+        }
+        
+    });
 }
 //fetchShowData();
 
@@ -40,11 +64,24 @@ function handleNavBtnClick(evt){
     }
     evt.target.classList.add("active");
     if(evt.target.name === "create"){
+        currentState = states.create;
+        showForm(true);
+        modalTitle.textContent = "Create vPet";
         modalEl.show();
 
     }else{
-        const vPetCards = document.querySelectorAll(".modalbtn");
-        vPetCards.forEach(btn=>btn.textContent = evt.target.name.toUpperCase());
+        console.log(evt.target.name);
+        if(evt.target.name === "update"){
+            currentState = states.update;
+            modalTitle.textContent = "Update vPet";
+        }else if(evt.target.name === "delete"){
+            currentState = states.delete;
+            modalTitle.textContent = "Delete vPet";
+        }else if(evt.target.name === "show"){
+            modalTitle.textContent = "Show vPet";
+            currentState = states.read;
+        }
+        btnRudPet.forEach(btn=>btn.textContent = evt.target.name.toUpperCase());
     }
 }
 for(let i = 0; i < btnName.length; i++){
@@ -63,14 +100,13 @@ async function sendFormData(formData){
     }
 }
 
-function createNewPet(){
-    console.log("create new pet");
+function subimitForm(){
     const petName = document.querySelector("#petName");
     const petDes = document.querySelector("#petDes");
     const petPrice = document.querySelector("#petPrice");
     const petQty = document.querySelector("#petQty");
     const petImgInput = document.querySelector("#petImgInput").files[0];
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append("name", petName.value);
     formData.append("des", petDes.value);
     formData.append("price", petPrice.value);
@@ -79,7 +115,7 @@ function createNewPet(){
     sendFormData(formData);
 }
 
-function resetPetForm(){
+function resetForm(){
     const petName = document.querySelector("#petName");
     const petDes = document.querySelector("#petDes");
     const petPrice = document.querySelector("#petPrice");
@@ -93,4 +129,48 @@ function resetPetForm(){
     petImgInput.files[0] = null;
     petImgInput.value = "";
     displayPetImage.style.backgroundImage = null;
+}
+
+function closeForm(){
+    if(currentState === states.create){
+        const evt = {};
+        evt.target = btnObj.read;
+        handleNavBtnClick(evt)
+    }
+}
+
+function getPetData(id){
+    spinner.style.display = "block";
+    fetchShowData(id);
+}
+
+function showForm(value){
+    let display = "none"
+    if(value === true){
+        display = "block"
+    }
+    showPetCard.style.display="none";
+    createUpdatePetForm.style.display=display;
+    btnResetForm.style.display=display;
+    btnSubmitForm.style.display=display;
+}
+
+function rudPet(evt){
+    
+    switch(currentState){
+        case states.read:
+            showForm(false)
+            getPetData(evt.target.dataset.id)
+            break;
+        case states.update:
+            showForm(true)
+            break;
+        case states.delete:
+            showForm(false)
+            break;
+        default:
+            showForm(false)
+            break;
+    }
+    modalEl.show();
 }

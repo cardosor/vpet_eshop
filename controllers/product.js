@@ -13,7 +13,7 @@ const product = (req, res) => {
 }
 
 
-const productTest = (req, res) => {
+const productJson = (req, res) => {
     //Query Model to return fruits
         Product.findById(req.params.id, (err, foundProduct) => {
             err ? res.status(400).json(err) : res.json(foundProduct);
@@ -118,7 +118,7 @@ const createProduct = (req, res) => {
                 req.body.name = cleanName;
                 Product.create(req.body, (err, createdVpet) => {
                     err ? res.send(err) : res.redirect(routeName);  
-                })
+                });
             }  
         });
     }else{
@@ -194,7 +194,7 @@ module.exports = {
     newProduct,
     createProduct,
     deleteProduct,
-    productTest,
+    productJson,
     editProduct,
     updateProduct,
     showProduct,

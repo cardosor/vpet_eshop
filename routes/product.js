@@ -6,7 +6,8 @@ const productController = require('../controllers/product');
 
 const routName = '/api/v1/vpets';
 
-const multer = require('multer')
+const multer = require('multer');
+
 const upload = multer({
     dest: "../public/img",
     fieldNameSize: 300,
@@ -18,9 +19,6 @@ const upload = multer({
 
 //index
 router.get(routName, productController.product);
-
-//TEST
-router.get(routName+'/test/:id', productController.productTest);
 
 //New
 router.get(routName+'/new', productController.newProduct);
@@ -42,5 +40,8 @@ router.get(routName+'/edit/:id', productController.editProduct);
 
 //Show
 router.get(routName+'/:id', productController.showProduct);
+
+//Show Json
+router.get(routName+'/test/:id', productController.productJson);
 
 module.exports = router;

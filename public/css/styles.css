@@ -32,6 +32,17 @@
     align-self: center;
 }
 
+#showPetCard{
+    width: 100%;
+}
+#showPetCard>img{
+    display: block;
+    max-width: 400px;
+    width: 100%;
+    height: auto;
+    margin: auto;
+}
+
 .card-deck{
     display: flex;
     flex-direction: row;
@@ -40,11 +51,23 @@
     margin: 20px;
 
 }
-.modalbtn{
+
+.spinner-border{
+    display: none;
+    margin: auto;
+}
+
+#createUpdatePetForm{
+    display: none;
+}
+.btnRudPet{
     width: 200px;
 }
 .card-body{
     text-align: center;
+}
+#showPetCard{
+    display: none;
 }
 
 #displayPetImage{
@@ -57,4 +80,15 @@
 #displayPetContainer{
     display: flex;
     justify-content: center;
+}
+
+#btnResetFrom{
+    display: block;
+}
+#btnFromSubmit{
+    display: block;
+}
+
+.pet-show{
+    color: black;
 }
