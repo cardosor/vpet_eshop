@@ -13,8 +13,12 @@ const modalElTitle = document.querySelector('#modalTitle');
 //===================================
 const displayPetImage = document.querySelector("#displayPetImage");
 const createUpdatePetForm = document.querySelector("#createUpdatePetForm");
+const btnDeletePet = document.querySelector("#btnDeletePet");
+btnDeletePet.addEventListener("click", deletePet);
 const btnSubmitForm = document.querySelector("#btnSubmitForm");
-btnSubmitForm.addEventListener("click", subimitForm);
+//btnSubmitForm.addEventListener("click", subimitForm);
+btnSubmitForm.addEventListener("click", subimitFormUpdate);
+
 const btnResetForm = document.querySelector("#btnResetForm");
 btnResetForm.addEventListener("click", resetForm);
 const closeModalTop = document.querySelector("#closeModalTop");
@@ -38,9 +42,17 @@ petImgInput.addEventListener("change", function (){
     reader.readAsDataURL(this.files[0]);
 });
 
-async function fetchShowData(id){
-    const response = await fetch("/api/v1/vpets/test/"+id);
+//=====FETCHDATA=====
+//=====FETCHDATA=====
+//=====FETCHDATA=====
+async function fetchDataSingle(id){
+    const response = await fetch("/api/v1/vpets/json/"+id);
     const data = await response.json();
+    return data;
+}
+
+//Load data to show card
+function loadShowData(data){
     spinner.style.display = "none";
     showPetCard.style.display="block";
     const petShowEl = document.querySelectorAll(".pet-show");
@@ -50,13 +62,26 @@ async function fetchShowData(id){
         if(name === "imgsrc"){
             el.src = data[name]
         }else{
-            console.log(el.dataset.name);
             el.textContent = `${display}: ${name === "price" ?  data[name].toFixed(2) : data[name]}`;
         }
-        
     });
 }
-//fetchShowData();
+//load data to the update form
+function loadUpdateFormData(data){
+    spinner.style.display = "none";
+    const petImgInput = document.querySelector("#petImgInput");
+    petImgInput.files[0] = null;
+    petImgInput.value = "";
+    const petFormEl = document.querySelectorAll(".pet-form");
+    petFormEl.forEach(el=>{
+        const name = el.name;
+        if(el.id === "displayPetImage"){
+            el.style.backgroundImage = `url(${data["imgsrc"]})`;
+        }else{
+            el.value = `${name === "price" ?  data[name].toFixed(2) : data[name]}`;
+        }
+    });
+}
 
 function handleNavBtnClick(evt){
     for(let i = 0; i < btnName.length; i++){
@@ -89,15 +114,45 @@ for(let i = 0; i < btnName.length; i++){
     btnObj[btnName[i].toLocaleLowerCase()].addEventListener('click',handleNavBtnClick);
 }
 
-async function sendFormData(formData){
-    console.log("sendFormData");
-    const response = await fetch("/api/v1/vpets/json", {method:"POST", body:formData});
+async function sendFormData(formData, id){
+    let route = ""; 
+    let method = "";
+    let message = "";
+    if(currentState === states.update){
+        if(id)
+        method = "PUT";
+        route = `/api/v1/vpets/json/${id}`;
+        message = "Pet updated.";
+    }else{
+        method = "POST";
+        route = "/api/v1/vpets/json";
+        message = "Pet created.";
+    }
+    const response = await fetch(route, {method:method, body:formData});
     const data = await response.json();
+    console.dir(data);
     if(!data.error){
-        alert("Entry Completed Successfully!");
+        alert(message);
     }else{
         alert(data.error);
     }
+}
+
+function subimitFormUpdate(evt){
+    let isMissing = false;
+    const id = evt.target.dataset.id;
+    const formData = new FormData();
+    const petFormEl = document.querySelectorAll(".pet-form");
+    const petImgInput = document.querySelector("#petImgInput").files[0];
+    petImgInput ? formData.append("imgsrc", petImgInput) : null;
+    petFormEl.forEach(el=>{
+        const name = el.name;
+        if(name !== undefined || isMissing === true){
+            console.log(el.value);
+            el.value ?  isMissing = false : isMissing = true;
+        }
+    });
+    isMissing ? alert("Please complete all fields.") : sendFormData(formData, id);
 }
 
 function subimitForm(){
@@ -112,7 +167,7 @@ function subimitForm(){
     formData.append("price", petPrice.value);
     formData.append("qty", petQty.value);
     formData.append("imgsrc", petImgInput);
-    sendFormData(formData);
+    sendFormData(formData, null);
 }
 
 function resetForm(){
@@ -122,6 +177,7 @@ function resetForm(){
     const petQty = document.querySelector("#petQty");
     const petImgInput = document.querySelector("#petImgInput");
     const displayPetImage = document.querySelector("#displayPetImage");
+    btnSubmitForm.setAttribute("data-id", "");
     petName.value  = "";
     petDes.value = "";
     petPrice.value = "";
@@ -136,13 +192,11 @@ function closeForm(){
         const evt = {};
         evt.target = btnObj.read;
         handleNavBtnClick(evt)
+    }else if(currentState === states.update){
+        resetForm();
     }
 }
 
-function getPetData(id){
-    spinner.style.display = "block";
-    fetchShowData(id);
-}
 
 function showForm(value){
     let display = "none"
@@ -150,23 +204,66 @@ function showForm(value){
         display = "block"
     }
     showPetCard.style.display="none";
+    btnDeletePet.style.display = "none"
     createUpdatePetForm.style.display=display;
     btnResetForm.style.display=display;
     btnSubmitForm.style.display=display;
 }
 
+async function deletePet(evt){
+    const id = evt.target.dataset.id;
+    const response = await fetch(`/api/v1/vpets/json/${id}`, {method:"DELETE"});
+    const data = await response.json();
+    if(!data.error){
+        console.log(JSON.stringify(data));
+        
+        alert(`Deleted Successfully!\n
+        Name: ${data.name}\n
+        Description: ${data.des.substring(0,data.des.lastIndexOf(" ",20))}...\n
+        Price: ${data.price}\n
+        Quantaty: ${data.qty}`);
+        modalEl.hide();
+    }else{
+        alert(data.error);
+    }
+}
+
 function rudPet(evt){
-    
+    const id = evt.target.dataset.id;
     switch(currentState){
         case states.read:
             showForm(false)
-            getPetData(evt.target.dataset.id)
+            fetchDataSingle(id).then((result, reject)=>{
+                if(reject){
+                    alert("Please try again later.");
+                }else{
+                    loadShowData(result);
+                }
+            });
             break;
         case states.update:
             showForm(true)
+            fetchDataSingle(id).then((result, reject)=>{
+                if(reject){
+                    alert("Please try again later.");
+                }else{
+                    btnResetForm.style.display = "none"
+                    btnSubmitForm.setAttribute("data-id", evt.target.dataset.id);
+                    loadUpdateFormData(result)
+                }
+            });
             break;
         case states.delete:
             showForm(false)
+            btnDeletePet.style.display = "block"
+            btnDeletePet.setAttribute("data-id", evt.target.dataset.id);
+            fetchDataSingle(id).then((result, reject)=>{
+                if(reject){
+                    alert("Please try again later.");
+                }else{
+                    loadShowData(result);
+                }
+            });
             break;
         default:
             showForm(false)

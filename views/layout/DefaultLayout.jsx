@@ -69,22 +69,23 @@ class DefaultLayout extends React.Component{
                         {/*  */}
                         {/*  */}
                         <form id="createUpdatePetForm">
+                            <input type="hidden" class="pet-form" id="origFilePath" name="imgsrc"/>
                             <div class="mb-3">
                                 <label for="petName" class="form-label">Name</label>
-                                <input type="text" class="form-control" name="name" id="petName" aria-describedby="name"/>
+                                <input type="text" class="form-control pet-form" name="name" id="petName" aria-describedby="name"/>
                             </div>
                             <div class="mb-3">
                                 <label for="petDes" class="form-label">Description</label>
-                                <textarea class="form-control" name="des" id="petDes" rows="3"/>
+                                <textarea class="form-control pet-form" name="des" id="petDes" rows="3"/>
                             </div>
                             <div class="row g-2">
                                 <div class="col-md">
                                     <label for="petPrice" class="form-label">Price</label>
-                                    <input type="number" step="0.01" class="form-control" name="price" id="petPrice"/>
+                                    <input type="number" step="0.01" class="form-control pet-form" name="price" id="petPrice"/>
                                 </div>
                                 <div class="col-md">
                                     <label for="petQty" class="form-label">Quantity</label>
-                                    <input type="number" class="form-control" name="price" id="petQty"/>
+                                    <input type="number" class="form-control pet-form" name="qty" id="petQty"/>
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -92,7 +93,8 @@ class DefaultLayout extends React.Component{
                                 <input name="imgsrc" class="form-control" type="file" id="petImgInput"/>
                             </div>
                             <div id="displayPetContainer">
-                             <div id="displayPetImage"></div>
+                            {/* <img class="pet-update-form" id="displayPetImage" src="" alt="" name="imgsrc"/> */}
+                            <div class="pet-form" id="displayPetImage"></div>
                             </div>
                         </form>
                         {/*  */}
@@ -100,6 +102,7 @@ class DefaultLayout extends React.Component{
                         {/*  */}
                     </div>
                     <div class="modal-footer">
+                         <button type="button" id="btnDeletePet" class="btn btn-danger">Delete</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeModalBottom">Close</button>
                         <button type="button" id="btnResetForm" class="btn btn-warning">Reset</button>
                         <button type="button" id="btnSubmitForm" class="btn btn-primary">Submit</button>

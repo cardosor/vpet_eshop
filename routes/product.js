@@ -25,11 +25,16 @@ router.get(routName+'/new', productController.newProduct);
 
 //Delete
 router.delete(routName+'/:id', productController.deleteProduct);
+//Delete Json
+router.delete(routName+'/json/:id', productController.deleteProductJson);
 
 //update
-router.put(routName+'/:id',upload.single("imgupdate"), productController.updateProduct);
+router.put(routName+'/:id',upload.single("imgsrc"), productController.updateProduct);
 
-//Create
+//update
+router.put(routName+'/json/:id',upload.single("imgsrc"), productController.updateProductJson);
+
+//Create Json
 router.post(routName+"/json", upload.single("imgsrc"), productController.createProductJson);
 
 //Create
@@ -42,6 +47,6 @@ router.get(routName+'/edit/:id', productController.editProduct);
 router.get(routName+'/:id', productController.showProduct);
 
 //Show Json
-router.get(routName+'/test/:id', productController.productJson);
+router.get(routName+'/Json/:id', productController.productJson);
 
 module.exports = router;

@@ -19,7 +19,7 @@ class Edit extends React.Component{
                     <label htmlFor="imgsrc">Image (.PNG or .JPG only):</label>
                     <img src={product.imgsrc} alt="" />
                     <input type="text" id="origFilePath" name="imgsrc" defaultValue={product.imgsrc}/>
-                    <input type="file" id="imgupdate" name="imgupdate" accept="image/*"/>
+                    <input type="file" id="imgsrc" name="imgsrc" accept="image/*"/>
                     <hr />
                     <input type="submit" value="Update vPet"/>
                 </form>

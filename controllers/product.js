@@ -42,6 +42,23 @@ const deleteProduct = (req, res) => {
     })
 }
 
+// Delete json
+const deleteProductJson = (req, res) => {
+    Product.findByIdAndDelete(req.params.id, (err, deletedVpet) => {
+        const publicPath = deletedVpet.imgsrc;
+        const localPath = "../public"+publicPath;
+        const targetPath = path.join(__dirname, localPath);
+        if(err){
+            res.status(400).json(err)
+        }else{
+            fs.unlink(targetPath, err => {
+                err ? res.status(400).json(err) : res.status(200).json(deletedVpet);
+            });
+            
+        }     
+    })
+}
+
 function cleanName(){
     console.log("Hello");
 }
@@ -96,6 +113,51 @@ const updateProduct = (req, res) => {
     }
 }
 
+//Update
+const updateProductJson = (req, res) => {
+
+    console.log(req.body);
+    console.log(req.file);
+    if(req.file){
+        const tempPath = req.file.path;
+        const fileExt = path.extname(req.file.originalname).toLocaleLowerCase();
+        //Remove special characters and more than one white space, also remove white space from start and end
+        const cleanName = (req.body.name).replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '').trim();
+        //Removes white space from string
+        const cleanFileName = cleanName.replace(/\s/g, '');
+        const publicPath = "/img/"+cleanFileName+Date.now()+fileExt;
+        const localPath = "../public"+publicPath;
+        const targetPath = path.join(__dirname, localPath);
+        if(fileExt === ".png" || fileExt === ".jpg" ){
+            fs.rename(tempPath, targetPath, err => {
+                if (err){
+                    res.status(400).json({"error":"Save image failed."})
+                }else{
+                    const imgToDeleteURI = path.join(__dirname, "../public"+req.body.imgsrc);
+                    fs.unlink(imgToDeleteURI, err => {
+                        if(err){
+                            console.log("Could not delete old image.")
+                        }
+                        req.body.imgsrc = publicPath;
+                        req.body.name = cleanName;
+                        Product.findByIdAndUpdate(req.params.id, req.body, {new:true}, (err, productUpdate) => {
+                            err ? res.json({"error":"Update Failed"}) : res.json(productUpdate);  
+                        });
+                    });
+                }  
+            });
+        }else{
+            fs.unlink(tempPath, err => {
+                err ? res.status(400).json({"error":"Could not delete temp image."}) : res.status(200).json({"img":"Only PNG or JPG File."});
+            });
+        }
+    }else{
+        Product.findByIdAndUpdate(req.params.id, req.body, {new:true}, (err, productUpdate) => {
+            err ? res.status(400).json({"error":"Update Failed"}) :  res.status(200).json(productUpdate);  
+        });
+    }
+}
+
 //Create
 const createProduct = (req, res) => {
     console.log(req.body);
@@ -128,7 +190,7 @@ const createProduct = (req, res) => {
     }
 }
 
-//Create
+//Create Json
 const createProductJson = (req, res) => {
     console.log(req.body);
     console.log(req.file);
@@ -198,5 +260,7 @@ module.exports = {
     editProduct,
     updateProduct,
     showProduct,
-    createProductJson
+    deleteProductJson,
+    createProductJson,
+    updateProductJson
 }
