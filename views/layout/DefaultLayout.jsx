@@ -94,7 +94,7 @@ class DefaultLayout extends React.Component{
                             </div>
                             <div id="displayPetContainer">
                             {/* <img class="pet-update-form" id="displayPetImage" src="" alt="" name="imgsrc"/> */}
-                            <div class="pet-form" id="displayPetImage"></div>
+                            <div class="pet-form" name="displayPetImage" id="displayPetImage"></div>
                             </div>
                         </form>
                         {/*  */}

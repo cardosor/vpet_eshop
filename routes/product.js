@@ -18,13 +18,20 @@ const upload = multer({
 //INDUCES
 
 //index
-router.get(routName, productController.product);
+router.get(routName, productController.products);
+
+//index Json
+router.get(routName+'/json', productController.productsJson);
+
+//index Json
+router.get(routName+'/jsonindex', productController.productsJsonIndex);
 
 //New
 router.get(routName+'/new', productController.newProduct);
 
 //Delete
 router.delete(routName+'/:id', productController.deleteProduct);
+
 //Delete Json
 router.delete(routName+'/json/:id', productController.deleteProductJson);
 

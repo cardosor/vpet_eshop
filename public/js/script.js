@@ -1,5 +1,6 @@
 let btnName = ["Read", "Create", "Update", "Delete"];
 const btnObj = {};
+const formElObj = {};
 const states = {create:"create",
                 read: "read",
                 update:"update",
@@ -16,22 +17,21 @@ const createUpdatePetForm = document.querySelector("#createUpdatePetForm");
 const btnDeletePet = document.querySelector("#btnDeletePet");
 btnDeletePet.addEventListener("click", deletePet);
 const btnSubmitForm = document.querySelector("#btnSubmitForm");
-//btnSubmitForm.addEventListener("click", subimitForm);
-btnSubmitForm.addEventListener("click", subimitFormUpdate);
-
+btnSubmitForm.addEventListener("click", subimitForm);
 const btnResetForm = document.querySelector("#btnResetForm");
 btnResetForm.addEventListener("click", resetForm);
 const closeModalTop = document.querySelector("#closeModalTop");
 closeModalTop.addEventListener("click", closeForm);
 const closeModalBottom = document.querySelector("#closeModalBottom");
 closeModalBottom.addEventListener("click", closeForm);
-let btnRudPet = document.querySelectorAll(".btnRudPet");
-btnRudPet.forEach(btn=>btn.addEventListener("click", rudPet));
+let btnRudPet = null;
 const spinner = document.querySelector(".spinner-border");
+const indexSpinner = document.querySelector("#indexSpinner");
 const showPetCard = document.querySelector("#showPetCard");
 
 //=============================
 //=============================
+const cardDeck = document.querySelector("#cardDeck");
 const petImgInput = document.querySelector("#petImgInput");
 petImgInput.addEventListener("change", function (){
     const reader = new FileReader();
@@ -42,6 +42,19 @@ petImgInput.addEventListener("change", function (){
     reader.readAsDataURL(this.files[0]);
 });
 
+//=====================
+//=====================
+function formElToObj(){
+    const petFormEl = document.querySelectorAll(".pet-form");
+    petFormEl.forEach(el=>{
+        const name = el.name;
+        if(el.id !== undefined && el.id !== null){
+            formElObj[name] = el
+        }
+    });
+}
+formElToObj();
+
 //=====FETCHDATA=====
 //=====FETCHDATA=====
 //=====FETCHDATA=====
@@ -50,6 +63,65 @@ async function fetchDataSingle(id){
     const data = await response.json();
     return data;
 }
+
+async function fetchDataAll(){
+    indexSpinner.style.display = "block";
+    const response = await fetch("/api/v1/vpets/json/");
+    const data = await response.json();
+    return data;
+}
+
+function loadIndexData(data){
+    console.log(data);
+    if(cardDeck){
+        data.forEach((obj)=>{
+            console.log(obj);
+            cardDeck.insertAdjacentHTML("afterbegin",`
+            <div class="card index-pet-card">
+                <img src=${obj.imgsrc} class="card-img-top" alt=""/>
+                <div class="card-header">
+                    vPet Name: ${obj.name} 
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Description: ${obj.des.length > 20 ? obj.des.substring(0,obj.des.lastIndexOf(" ",20))+"..." : obj.des }</li>
+                    <li class="list-group-item">Price: ${obj.price.toFixed(2)}</li>
+                    <li class="list-group-item">Quantity: ${obj.qty}</li>
+                </ul>
+                <div class="card-body">
+                <button type="button" data-id=${obj._id} class="btn btn-primary btnRudPet">
+                ${currentState.toUpperCase()}
+                </button>
+                </div>
+            </div>
+            `);
+        });
+    }
+    
+    btnRudPet = document.querySelectorAll(".btnRudPet");
+    btnRudPet.forEach(btn=>btn.addEventListener("click", rudPet));
+}
+fetchDataAll().then((result, reject)=>{
+    if(reject){
+        alert("Please try reloading the page!");
+    }else{
+        indexSpinner.style.display = "none";
+        loadIndexData(result);
+    }
+});
+
+function reloadIndex(){
+    const indexPetCard = document.querySelectorAll(".index-pet-card");
+    indexPetCard.forEach((el)=>el.remove());
+    fetchDataAll().then((result, reject)=>{
+        if(reject){
+            alert("Please try reloading the page!");
+        }else{
+            indexSpinner.style.display = "none";
+            loadIndexData(result);
+        }
+    });
+}
+
 
 //Load data to show card
 function loadShowData(data){
@@ -66,21 +138,22 @@ function loadShowData(data){
         }
     });
 }
-//load data to the update form
+//load data to the form
 function loadUpdateFormData(data){
     spinner.style.display = "none";
     const petImgInput = document.querySelector("#petImgInput");
     petImgInput.files[0] = null;
     petImgInput.value = "";
-    const petFormEl = document.querySelectorAll(".pet-form");
-    petFormEl.forEach(el=>{
-        const name = el.name;
-        if(el.id === "displayPetImage"){
-            el.style.backgroundImage = `url(${data["imgsrc"]})`;
+    for(property in formElObj){
+        const obj = formElObj[property];
+        const name = obj.name;
+        console.log(obj.id);
+        if(obj.id === "displayPetImage"){
+            obj.style.backgroundImage = `url(${data["imgsrc"]})`;
         }else{
-            el.value = `${name === "price" ?  data[name].toFixed(2) : data[name]}`;
+            obj.value = `${name === "price" ?  data[name].toFixed(2) : data[name]}`;
         }
-    });
+    }
 }
 
 function handleNavBtnClick(evt){
@@ -133,42 +206,36 @@ async function sendFormData(formData, id){
     console.dir(data);
     if(!data.error){
         alert(message);
+        reloadIndex();
     }else{
         alert(data.error);
     }
 }
 
-function subimitFormUpdate(evt){
+function subimitForm(evt){
     let isMissing = false;
-    const id = evt.target.dataset.id;
+    const id = evt.target.dataset.id ? evt.target.dataset.id : null;
     const formData = new FormData();
-    const petFormEl = document.querySelectorAll(".pet-form");
     const petImgInput = document.querySelector("#petImgInput").files[0];
-    petImgInput ? formData.append("imgsrc", petImgInput) : null;
-    petFormEl.forEach(el=>{
-        const name = el.name;
-        if(name !== undefined || isMissing === true){
-            console.log(el.value);
-            el.value ?  isMissing = false : isMissing = true;
+    const origFilePath = document.querySelector("#origFilePath");
+    if(petImgInput){
+        origFilePath.value = "none";
+        formData.append("imgsrc", petImgInput)
+    }
+    for(property in formElObj){
+        const obj = formElObj[property];
+        const name = obj.name;
+        const value = obj.value;
+        if(obj.id !== "displayPetImage"){
+            if(name !== undefined && isMissing === false){
+                value ?  isMissing = false : isMissing = true;
+                formData.append(name, value)
+            }
         }
-    });
+    }
     isMissing ? alert("Please complete all fields.") : sendFormData(formData, id);
 }
 
-function subimitForm(){
-    const petName = document.querySelector("#petName");
-    const petDes = document.querySelector("#petDes");
-    const petPrice = document.querySelector("#petPrice");
-    const petQty = document.querySelector("#petQty");
-    const petImgInput = document.querySelector("#petImgInput").files[0];
-    const formData = new FormData();
-    formData.append("name", petName.value);
-    formData.append("des", petDes.value);
-    formData.append("price", petPrice.value);
-    formData.append("qty", petQty.value);
-    formData.append("imgsrc", petImgInput);
-    sendFormData(formData, null);
-}
 
 function resetForm(){
     const petName = document.querySelector("#petName");
@@ -177,11 +244,13 @@ function resetForm(){
     const petQty = document.querySelector("#petQty");
     const petImgInput = document.querySelector("#petImgInput");
     const displayPetImage = document.querySelector("#displayPetImage");
+    const origFilePath = document.querySelector("#origFilePath");
     btnSubmitForm.setAttribute("data-id", "");
     petName.value  = "";
     petDes.value = "";
     petPrice.value = "";
     petQty.value = "";
+    origFilePath.value = "";
     petImgInput.files[0] = null;
     petImgInput.value = "";
     displayPetImage.style.backgroundImage = null;
@@ -215,8 +284,7 @@ async function deletePet(evt){
     const response = await fetch(`/api/v1/vpets/json/${id}`, {method:"DELETE"});
     const data = await response.json();
     if(!data.error){
-        console.log(JSON.stringify(data));
-        
+        reloadIndex();
         alert(`Deleted Successfully!\n
         Name: ${data.name}\n
         Description: ${data.des.substring(0,data.des.lastIndexOf(" ",20))}...\n

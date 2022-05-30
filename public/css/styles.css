@@ -56,6 +56,10 @@
     display: none;
     margin: auto;
 }
+#indexSpinner{
+    display:block;
+    margin: auto;
+}
 
 #createUpdatePetForm{
     display: none;
@@ -97,4 +101,7 @@
 }
 .pet-form{
     color: black;
+}
+.index-pet-card{   
+    font-size: 16px;
 }

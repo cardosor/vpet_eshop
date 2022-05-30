@@ -5,19 +5,22 @@ const fs = require("fs");
 
 //INDUCES
 //index
-const product = (req, res) => {
+const products = (req, res) => {
     //Query Model to return fruits
     Product.find({}, (err, allProducts)=>{
         res.render('Index', {products: allProducts})
     });
 }
-
-
-const productJson = (req, res) => {
-    //Query Model to return fruits
-        Product.findById(req.params.id, (err, foundProduct) => {
-            err ? res.status(400).json(err) : res.json(foundProduct);
-        });
+//index Json
+const productsJsonIndex = (req, res) => { 
+    res.render('IndexJson')
+}
+//index return json
+const productsJson = (req, res) => {
+    //Query Model to return Product
+    Product.find({}, (err, allProducts)=>{
+        err ? res.status(400).json(err) : res.json(allProducts);
+    });
 }
 
 //New
@@ -249,10 +252,20 @@ const showProduct = (req, res)=> {
     });
 }
 
+//Show json
+const productJson = (req, res) => {
+    //Query Model to return Product
+        Product.findById(req.params.id, (err, foundProduct) => {
+            err ? res.status(400).json(err) : res.json(foundProduct);
+        });
+}
+
 
 
 module.exports = {
-    product,
+    products,
+    productsJson,
+    productsJsonIndex,
     newProduct,
     createProduct,
     deleteProduct,
