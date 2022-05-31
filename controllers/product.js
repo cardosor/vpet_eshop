@@ -1,9 +1,40 @@
 const Product = require('../models/Product');
+const Pet = require('../models/Pet');
 const routeName = '/api/v1/vpets'
 const path = require("path");
 const fs = require("fs");
 
 //INDUCES
+
+//Buy Pet
+const buyPet = (req, res) => {
+    const id = req.params.id;
+    Product.findByIdAndUpdate(id,{"$inc":{"qty":-1}}, (err, product)=>{
+        console.log(product);
+        if(err){
+            shopIndex()
+        }else{
+            Pet.create({"name": product.name, "des": product.des, "imgsrc": product.imgsrc, "product_id":product._id}, (err, createdVpet) => {
+                err ? res.send(err) : res.redirect("/api/v1/vpets/shop");  
+            });
+        }
+    });
+}
+//Shop Index
+const shopIndex = (req, res) => {
+    //Query Model to returns all produts
+    Product.find({}, (err, allProducts)=>{
+        res.render('Shop', {products: allProducts})
+    });
+}
+
+//Dashboard Index
+const dashIndex = (req, res) => {
+    Pet.find({}, (err, allPets)=>{
+        res.render('Dashboard', {pets: allPets})
+    });
+}
+
 //index
 const products = (req, res) => {
     //Query Model to return fruits
@@ -275,5 +306,8 @@ module.exports = {
     showProduct,
     deleteProductJson,
     createProductJson,
-    updateProductJson
+    updateProductJson,
+    shopIndex,
+    dashIndex,
+    buyPet
 }

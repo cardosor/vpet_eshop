@@ -17,6 +17,13 @@ const upload = multer({
 
 //INDUCES
 
+
+//Index Buy
+router.get(routName+"/shop/:id", productController.buyPet);
+//Index Shop
+router.get(routName+"/shop", productController.shopIndex);
+//Index Dashboard
+router.get(routName+"/dashboard", productController.dashIndex);
 //index
 router.get(routName, productController.products);
 

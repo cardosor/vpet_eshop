@@ -219,7 +219,10 @@ function subimitForm(evt){
     const petImgInput = document.querySelector("#petImgInput").files[0];
     const origFilePath = document.querySelector("#origFilePath");
     if(petImgInput){
-        origFilePath.value = "none";
+        if(currentState === states.create){
+            origFilePath.value = "none";
+        }
+        console.log(origFilePath.value)
         formData.append("imgsrc", petImgInput)
     }
     for(property in formElObj){

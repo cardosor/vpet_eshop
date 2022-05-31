@@ -64,6 +64,13 @@
 #createUpdatePetForm{
     display: none;
 }
+.btnShowPet{
+    width: 100px;
+}
+.btn-buy-pet{
+    width: 100px;
+}
+
 .btnRudPet{
     width: 200px;
 }
@@ -71,7 +78,7 @@
     text-align: center;
 }
 #showPetCard{
-    display: none;
+    display: block;
 }
 
 #displayPetImage{
