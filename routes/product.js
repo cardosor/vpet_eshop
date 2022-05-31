@@ -18,19 +18,22 @@ const upload = multer({
 //INDUCES
 
 
-//Index Buy
-router.get(routName+"/shop/:id", productController.buyPet);
+
 //Index Shop
 router.get(routName+"/shop", productController.shopIndex);
+//Index Buy
+router.get(routName+"/shop/:id", productController.buyPet);
 //Index Dashboard
 router.get(routName+"/dashboard", productController.dashIndex);
+
+
 //index
 router.get(routName, productController.products);
 
-//index Json
+//index Json returns json file with all vpets
 router.get(routName+'/json', productController.productsJson);
 
-//index Json
+//index Json returns a HTML page
 router.get(routName+'/jsonindex', productController.productsJsonIndex);
 
 //New
@@ -45,14 +48,14 @@ router.delete(routName+'/json/:id', productController.deleteProductJson);
 //update
 router.put(routName+'/:id',upload.single("imgsrc"), productController.updateProduct);
 
-//update
+//update Json
 router.put(routName+'/json/:id',upload.single("imgsrc"), productController.updateProductJson);
-
-//Create Json
-router.post(routName+"/json", upload.single("imgsrc"), productController.createProductJson);
 
 //Create
 router.post(routName, upload.single("imgsrc"), productController.createProduct);
+
+//Create Json
+router.post(routName+"/json", upload.single("imgsrc"), productController.createProductJson);
 
 //Edit
 router.get(routName+'/edit/:id', productController.editProduct);
