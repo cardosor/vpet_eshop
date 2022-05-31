@@ -1,6 +1,11 @@
+
+//Nav bar Button names
 let btnName = ["Read", "Create", "Update", "Delete"];
+//Obj to hold Nav bar buttons 
 const btnObj = {};
+//Obj to hold form elements
 const formElObj = {};
+//Application states
 const states = {create:"create",
                 read: "read",
                 update:"update",
@@ -24,15 +29,16 @@ const closeModalTop = document.querySelector("#closeModalTop");
 closeModalTop.addEventListener("click", closeForm);
 const closeModalBottom = document.querySelector("#closeModalBottom");
 closeModalBottom.addEventListener("click", closeForm);
-let btnRudPet = null;
+let btnRudPet = null; //Each vpet card will have one button that will change according to the state
 const spinner = document.querySelector(".spinner-border");
 const indexSpinner = document.querySelector("#indexSpinner");
 const showPetCard = document.querySelector("#showPetCard");
 
-//=============================
-//=============================
+//Div element that contains all the vpets cards
 const cardDeck = document.querySelector("#cardDeck");
+//Image input field
 const petImgInput = document.querySelector("#petImgInput");
+//Event to add the image as background to a div once the image is selected
 petImgInput.addEventListener("change", function (){
     const reader = new FileReader();
     reader.addEventListener("load", ()=>{
@@ -42,8 +48,7 @@ petImgInput.addEventListener("change", function (){
     reader.readAsDataURL(this.files[0]);
 });
 
-//=====================
-//=====================
+//Select form elemets and add it to the formElObj
 function formElToObj(){
     const petFormEl = document.querySelectorAll(".pet-form");
     petFormEl.forEach(el=>{
@@ -55,24 +60,28 @@ function formElToObj(){
 }
 formElToObj();
 
-//=====FETCHDATA=====
-//=====FETCHDATA=====
-//=====FETCHDATA=====
+//=====FETCHDATA SIGLE vPet=====
+//=====FETCHDATA SIGLE vPet=====
+//=====FETCHDATA SIGLE vPet=====
 async function fetchDataSingle(id){
     const response = await fetch("/api/v1/vpets/json/"+id);
     const data = await response.json();
     return data;
 }
 
+//=====FETCHDATA All vPet=====
+//=====FETCHDATA All vPet=====
+//=====FETCHDATA All vPet=====
 async function fetchDataAll(){
+    //show loader
     indexSpinner.style.display = "block";
     const response = await fetch("/api/v1/vpets/json/");
     const data = await response.json();
     return data;
 }
 
+//Add vPets to the cardDeck element based on json file
 function loadIndexData(data){
-    console.log(data);
     if(cardDeck){
         data.forEach((obj)=>{
             console.log(obj);
@@ -96,10 +105,12 @@ function loadIndexData(data){
             `);
         });
     }
-    
+    //Need to query all the button again
     btnRudPet = document.querySelectorAll(".btnRudPet");
     btnRudPet.forEach(btn=>btn.addEventListener("click", rudPet));
 }
+
+//Call fetchDataAll async function
 fetchDataAll().then((result, reject)=>{
     if(reject){
         alert("Please try reloading the page!");
@@ -109,6 +120,7 @@ fetchDataAll().then((result, reject)=>{
     }
 });
 
+//Once a CRUD action takes place the data needs to be reloaded, page is not refreshed.
 function reloadIndex(){
     const indexPetCard = document.querySelectorAll(".index-pet-card");
     indexPetCard.forEach((el)=>el.remove());
@@ -138,6 +150,7 @@ function loadShowData(data){
         }
     });
 }
+
 //load data to the form
 function loadUpdateFormData(data){
     spinner.style.display = "none";
@@ -156,19 +169,21 @@ function loadUpdateFormData(data){
     }
 }
 
+//Handle NAV BAR click.
 function handleNavBtnClick(evt){
+    //Remove the active status.
     for(let i = 0; i < btnName.length; i++){
         btnObj[btnName[i].toLocaleLowerCase()].classList.remove("active");
     }
+    //Add active status to the clicked button
     evt.target.classList.add("active");
+    //If create is select show Modal with form change state.
     if(evt.target.name === "create"){
         currentState = states.create;
         showForm(true);
         modalTitle.textContent = "Create vPet";
-        modalEl.show();
-
+        modalEl.show()
     }else{
-        console.log(evt.target.name);
         if(evt.target.name === "update"){
             currentState = states.update;
             modalTitle.textContent = "Update vPet";
@@ -182,11 +197,18 @@ function handleNavBtnClick(evt){
         btnRudPet.forEach(btn=>btn.textContent = evt.target.name.toUpperCase());
     }
 }
+
+//Select all NAV BAR buttons based on btnName array and add addEventListener
 for(let i = 0; i < btnName.length; i++){
     btnObj[btnName[i].toLocaleLowerCase()] = document.querySelector("#btn"+btnName[i]);
     btnObj[btnName[i].toLocaleLowerCase()].addEventListener('click',handleNavBtnClick);
 }
 
+//===========Form Section=============
+//===========Form Section=============
+//===========Form Section=============
+
+//Send form data and reload vPet list
 async function sendFormData(formData, id){
     let route = ""; 
     let method = "";
@@ -212,25 +234,34 @@ async function sendFormData(formData, id){
     }
 }
 
+//Called when button subimit is clicked
+//Get the data in the form then send to sendFormData function
 function subimitForm(evt){
+    //To check if there are missing fields
     let isMissing = false;
+    //if id is set this will be an update request
     const id = evt.target.dataset.id ? evt.target.dataset.id : null;
     const formData = new FormData();
+    //Get the image
     const petImgInput = document.querySelector("#petImgInput").files[0];
+    //Get the original file path in case this is an update
+    //The image will be deleted in case a new one is provided
     const origFilePath = document.querySelector("#origFilePath");
+    //If the current state is create, there is no need to send the original file path
     if(petImgInput){
         if(currentState === states.create){
             origFilePath.value = "none";
         }
-        console.log(origFilePath.value)
         formData.append("imgsrc", petImgInput)
     }
     for(property in formElObj){
         const obj = formElObj[property];
         const name = obj.name;
         const value = obj.value;
+        //displayPetImage does not need to be send, this is only a image preview
         if(obj.id !== "displayPetImage"){
             if(name !== undefined && isMissing === false){
+                //Check for missing fields in the form
                 value ?  isMissing = false : isMissing = true;
                 formData.append(name, value)
             }
@@ -239,7 +270,7 @@ function subimitForm(evt){
     isMissing ? alert("Please complete all fields.") : sendFormData(formData, id);
 }
 
-
+//Reset form 
 function resetForm(){
     const petName = document.querySelector("#petName");
     const petDes = document.querySelector("#petDes");
@@ -259,6 +290,8 @@ function resetForm(){
     displayPetImage.style.backgroundImage = null;
 }
 
+//If the form is closed and the state is create, the page will go back to show/read
+//Else the form will be reset and the current state will not change
 function closeForm(){
     if(currentState === states.create){
         const evt = {};
@@ -269,7 +302,7 @@ function closeForm(){
     }
 }
 
-
+//Show from and hide pet card in the Modal
 function showForm(value){
     let display = "none"
     if(value === true){
@@ -282,23 +315,26 @@ function showForm(value){
     btnSubmitForm.style.display=display;
 }
 
+//Delete vPet and show a message with the deleted vPet information.
 async function deletePet(evt){
     const id = evt.target.dataset.id;
     const response = await fetch(`/api/v1/vpets/json/${id}`, {method:"DELETE"});
     const data = await response.json();
     if(!data.error){
-        reloadIndex();
         alert(`Deleted Successfully!\n
         Name: ${data.name}\n
         Description: ${data.des.substring(0,data.des.lastIndexOf(" ",20))}...\n
         Price: ${data.price}\n
         Quantaty: ${data.qty}`);
+        reloadIndex();
         modalEl.hide();
     }else{
         alert(data.error);
     }
 }
 
+//READ, UPDATE and DELETE pet button, according to the current state the button click will take a
+//different action then show the modal wil the Update form, the Delete option or the Show information card
 function rudPet(evt){
     const id = evt.target.dataset.id;
     switch(currentState){
@@ -337,7 +373,14 @@ function rudPet(evt){
             });
             break;
         default:
-            showForm(false)
+            showForm(false);
+            fetchDataSingle(id).then((result, reject)=>{
+                if(reject){
+                    alert("Please try again later.");
+                }else{
+                    loadShowData(result);
+                }
+            });
             break;
     }
     modalEl.show();
